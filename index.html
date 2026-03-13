@@ -23,13 +23,24 @@
             margin: 0;
         }
 
+        /* Navigazione superiore */
+        .top-nav {
+            position: absolute;
+            top: 2rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            z-index: 10;
+        }
+
         .title-giant {
             font-family: 'Syne', sans-serif;
             font-weight: 800;
-            /* Dimensione dinamica: molto grande ma fluida */
             font-size: clamp(4rem, 22vw, 14rem);
             letter-spacing: -0.05em;
-            /* Line height ridotto per tenere le parole vicine nel wrap */
             line-height: 0.8;
             text-transform: uppercase;
             user-select: none;
@@ -40,7 +51,6 @@
             align-items: center;
         }
 
-        /* Forza il wrap su mobile e tablet piccoli, torna riga singola su desktop */
         .title-word {
             display: block;
         }
@@ -80,7 +90,6 @@
                 text-align: center !important;
                 width: 100%;
             }
-            /* Ordine degli elementi su mobile: Audio al centro tra i due link */
             .order-mobile-1 { order: 1; }
             .order-mobile-2 { order: 2; }
             .order-mobile-3 { order: 3; }
@@ -149,7 +158,12 @@
 </head>
 <body>
 
-    <!-- Titolo Principale con split per responsive -->
+    <!-- Navigazione Superiore -->
+    <div class="top-nav">
+        <span>8BINARY</span>
+    </div>
+
+    <!-- Titolo Principale -->
     <h1 class="title-giant">
         <span class="title-word">DISCO</span>
         <span class="title-word">LOW</span>
@@ -178,7 +192,7 @@
 
         <!-- Destra: Email -->
         <div class="flex-1 text-right order-mobile-3">
-            <a href="mailto:info@8b8b.it">Contact Email</a>
+            <a href="mailto:info@8b8b.it">contact | booking</a>
         </div>
     </div>
 
@@ -214,7 +228,6 @@
             isPlaying = !isPlaying;
         }
 
-        // Setup iniziale
         audioBtn.style.opacity = "0.5";
     </script>
 </body>
