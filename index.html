@@ -98,6 +98,20 @@
             border-bottom: 1px solid #fff;
         }
 
+        .audio-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .audio-status-label {
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            opacity: 0.5;
+            transition: opacity 0.3s ease;
+        }
+
         .audio-control {
             cursor: pointer;
             padding: 12px;
@@ -150,12 +164,15 @@
 
         <!-- Centro: Audio Control -->
         <div class="flex-1 flex justify-center order-mobile-1">
-            <div id="audio-btn" class="audio-control" onclick="toggleAudio()" title="Play/Pause Audio">
-                <div id="visualizer" class="flex items-end h-4">
-                    <span class="bar" style="animation-delay: 0.1s"></span>
-                    <span class="bar" style="animation-delay: 0.3s"></span>
-                    <span class="bar" style="animation-delay: 0.2s"></span>
+            <div class="audio-wrapper">
+                <div id="audio-btn" class="audio-control" onclick="toggleAudio()" title="Play/Pause Audio">
+                    <div id="visualizer" class="flex items-end h-4">
+                        <span class="bar" style="animation-delay: 0.1s"></span>
+                        <span class="bar" style="animation-delay: 0.3s"></span>
+                        <span class="bar" style="animation-delay: 0.2s"></span>
+                    </div>
                 </div>
+                <span id="audio-label" class="audio-status-label">DISCO OFF</span>
             </div>
         </div>
 
@@ -175,6 +192,7 @@
         const audio = document.getElementById('bg-audio');
         const audioBtn = document.getElementById('audio-btn');
         const visualizer = document.getElementById('visualizer');
+        const audioLabel = document.getElementById('audio-label');
         let isPlaying = false;
 
         function toggleAudio() {
@@ -182,16 +200,21 @@
                 audio.pause();
                 visualizer.classList.remove('playing');
                 audioBtn.style.opacity = "0.5";
+                audioLabel.innerText = "DISCO OFF";
+                audioLabel.style.opacity = "0.5";
             } else {
                 audio.play().catch(e => {
                     console.log("Audio playback blocked or file not found.");
                 });
                 visualizer.classList.add('playing');
                 audioBtn.style.opacity = "1";
+                audioLabel.innerText = "DISCO ON";
+                audioLabel.style.opacity = "1";
             }
             isPlaying = !isPlaying;
         }
 
+        // Setup iniziale
         audioBtn.style.opacity = "0.5";
     </script>
 </body>
