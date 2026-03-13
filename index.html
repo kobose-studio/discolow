@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DISCOLOW - Coming Soon</title>
-    <!-- Import Font Syne -->
+    <!-- Import Font Syne e Space Mono per l'estetica Rogue -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -31,7 +31,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Sotto i testi */
+            z-index: 1;
             pointer-events: all;
         }
 
@@ -61,8 +61,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            z-index: 5; /* Sopra le particelle */
-            pointer-events: none; /* Permette al mouse di interagire con le particelle sotto */
+            z-index: 5;
+            pointer-events: none;
         }
 
         .title-word {
@@ -78,6 +78,89 @@
             .title-word {
                 display: inline;
             }
+        }
+
+        /* Control Panel - Rogue Aesthetic */
+        #settings-panel {
+            position: absolute;
+            right: -300px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 280px;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem 1.5rem;
+            z-index: 50;
+            transition: right 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(15px);
+            font-family: 'Space Mono', monospace;
+        }
+
+        #settings-panel.open {
+            right: 0;
+        }
+
+        .settings-toggle {
+            position: absolute;
+            left: -45px;
+            top: 0;
+            background: rgba(5, 5, 5, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-right: none;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+            transition: color 0.3s ease;
+        }
+
+        .settings-toggle:hover {
+            color: #fff;
+        }
+
+        .setting-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .setting-label {
+            display: block;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .setting-label span {
+            color: #fff;
+            float: right;
+        }
+
+        input[type=range] {
+            width: 100%;
+            background: transparent;
+            -webkit-appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 10px;
+            width: 10px;
+            border-radius: 0; /* Square/Rogue look */
+            background: #fff;
+            cursor: pointer;
+            margin-top: -4.5px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
 
         .bottom-nav {
@@ -100,13 +183,6 @@
                 gap: 2rem;
                 bottom: 2rem;
             }
-            .flex-1 {
-                text-align: center !important;
-                width: 100%;
-            }
-            .order-mobile-1 { order: 1; }
-            .order-mobile-2 { order: 2; }
-            .order-mobile-3 { order: 3; }
         }
 
         a {
@@ -139,17 +215,12 @@
             cursor: pointer;
             padding: 12px;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
-        }
-
-        .audio-control:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: scale(1.1);
         }
 
         .playing .bar {
@@ -175,28 +246,56 @@
     <!-- Sfondo Particellare -->
     <canvas id="particleCanvas"></canvas>
 
-    <!-- Navigazione Superiore -->
+    <!-- Pannello Modifica (Archeologia Binaria) -->
+    <div id="settings-panel">
+        <div class="settings-toggle" onclick="toggleSettings()">[SYS]</div>
+        <h2 class="text-[0.6rem] uppercase tracking-[0.3em] mb-8 border-b border-white/10 pb-2 text-white/40">Dancing 0/1</h2>
+        
+        <div class="setting-group">
+            <label class="setting-label">Binary Dust <span id="val-density">120</span></label>
+            <input type="range" id="param-density" min="20" max="400" value="120" oninput="updateParams()">
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">Signal Conflict <span id="val-repulsion">180</span></label>
+            <input type="range" id="param-repulsion" min="50" max="500" value="180" oninput="updateParams()">
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">Clock Jitter <span id="val-friction">95</span></label>
+            <input type="range" id="param-friction" min="70" max="99" value="95" oninput="updateParams()">
+        </div>
+
+        <div class="setting-group">
+            <label class="setting-label">Amplitude Overload <span id="val-size">6</span></label>
+            <input type="range" id="param-size" min="1" max="25" value="6" oninput="updateParams()">
+        </div>
+        
+        <button onclick="resetParticles()" class="w-full text-[0.55rem] uppercase tracking-[0.2em] border border-white/10 py-3 mt-4 hover:bg-white hover:text-black transition-all">Re-Boot Archeology</button>
+        <div class="mt-8 text-[0.45rem] text-white/20 leading-loose">
+            STATUS: ANALYZING_SOUNDSCAPE...<br>
+            INPUT: JUNGLE_FU_MP3<br>
+            CORE: 8B_INARY_ROGUE_ENGINE
+        </div>
+    </div>
+
     <div class="top-nav">
         <span>8BINARY</span>
     </div>
 
-    <!-- Titolo Principale -->
     <h1 class="title-giant">
         <span class="title-word">DISCO</span>
         <span class="title-word">LOW</span>
     </h1>
 
-    <!-- Navigazione Inferiore -->
     <div class="bottom-nav">
-        <!-- Sinistra: Instagram -->
         <div class="flex-1 text-left order-mobile-2">
             <a href="https://www.instagram.com/disco_low" target="_blank" rel="noopener noreferrer">Instagram</a>
         </div>
 
-        <!-- Centro: Audio Control -->
         <div class="flex-1 flex justify-center order-mobile-1">
             <div class="audio-wrapper">
-                <div id="audio-btn" class="audio-control" onclick="toggleAudio()" title="Play/Pause Audio">
+                <div id="audio-btn" class="audio-control" onclick="toggleAudio()">
                     <div id="visualizer" class="flex items-end h-4">
                         <span class="bar" style="animation-delay: 0.1s"></span>
                         <span class="bar" style="animation-delay: 0.3s"></span>
@@ -207,23 +306,31 @@
             </div>
         </div>
 
-        <!-- Destra: Email -->
         <div class="flex-1 text-right order-mobile-3">
             <a href="mailto:info@8b8b.it">contact | booking</a>
         </div>
     </div>
 
-    <!-- Audio Element -->
     <audio id="bg-audio" loop>
         <source src="Discolow_Jungle-Fu.mp3" type="audio/mpeg">
-        Il tuo browser non supporta l'elemento audio.
     </audio>
 
     <script>
-        /* --- LOGICA PARTICELLE --- */
+        /* --- CONFIGURAZIONE DINAMICA --- */
+        let config = {
+            numParticles: 120,
+            repulsionDistance: 180,
+            repulsionStrength: 0.45,
+            friction: 0.95,
+            maxSize: 6
+        };
+
         const canvas = document.getElementById('particleCanvas');
         const ctx = canvas.getContext('2d');
-        
+        let mouseX = null;
+        let mouseY = null;
+        let particles = [];
+
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -231,17 +338,8 @@
         window.addEventListener('resize', resize);
         resize();
 
-        let mouseX = null;
-        let mouseY = null;
-        let particles = [];
-        const numParticles = 120; // Ridotto per performance
-        const repulsionDistance = 180;
-        const repulsionStrength = 0.4;
-
         const platonicSolids = [
-            { name: 'tetrahedron', sides: 3 },
-            { name: 'cube', sides: 4 },
-            { name: 'hexagon', sides: 6 }
+            { sides: 3 }, { sides: 4 }, { sides: 6 }
         ];
 
         function drawPolygon(ctx, x, y, radius, sides) {
@@ -259,35 +357,40 @@
 
         class Particle {
             constructor() {
-                this.init();
+                this.init(true); // true = random start alpha
             }
-            init() {
+            init(randomAlpha = false) {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 4 + 2;
-                this.velocityX = (Math.random() - 0.5) * 1.5;
-                this.velocityY = (Math.random() - 0.5) * 1.5;
-                this.alpha = Math.random() * 0.5 + 0.1;
+                this.size = Math.random() * config.maxSize + 1;
+                this.velocityX = (Math.random() - 0.5) * 2;
+                this.velocityY = (Math.random() - 0.5) * 2;
+                // Impostiamo un'opacità iniziale mediano/superiore se richiesto
+                this.alpha = randomAlpha ? (Math.random() * 0.25 + 0.1) : 0;
+                this.fadeSpeed = 0.01;
                 this.sides = platonicSolids[Math.floor(Math.random() * platonicSolids.length)].sides;
             }
             update() {
+                // Effetto fade-in continuo fino al cap massimo per le nuove particelle
+                if (this.alpha < 0.3) {
+                    this.alpha += this.fadeSpeed;
+                }
+
                 if (mouseX !== null && mouseY !== null) {
                     let dx = this.x - mouseX;
                     let dy = this.y - mouseY;
                     let distance = Math.sqrt(dx * dx + dy * dy);
-                    if (distance < repulsionDistance) {
-                        let force = (repulsionDistance - distance) / repulsionDistance;
-                        this.velocityX += (dx / distance) * force * repulsionStrength;
-                        this.velocityY += (dy / distance) * force * repulsionStrength;
+                    if (distance < config.repulsionDistance) {
+                        let force = (config.repulsionDistance - distance) / config.repulsionDistance;
+                        this.velocityX += (dx / distance) * force * config.repulsionStrength;
+                        this.velocityY += (dy / distance) * force * config.repulsionStrength;
                     }
                 }
-
                 this.x += this.velocityX;
                 this.y += this.velocityY;
-                this.velocityX *= 0.95; // Attrito
-                this.velocityY *= 0.95;
+                this.velocityX *= config.friction;
+                this.velocityY *= config.friction;
 
-                // Bounce & Wrap
                 if (this.x < 0) this.x = canvas.width;
                 if (this.x > canvas.width) this.x = 0;
                 if (this.y < 0) this.y = canvas.height;
@@ -299,14 +402,51 @@
             }
         }
 
-        for (let i = 0; i < numParticles; i++) {
-            particles.push(new Particle());
+        function resetParticles() {
+            particles = [];
+            for (let i = 0; i < config.numParticles; i++) {
+                // All'avvio (reset) forziamo un'opacità visibile
+                particles.push(new Particle());
+                particles[i].alpha = Math.random() * 0.2 + 0.1; 
+            }
+        }
+
+        function updateParams() {
+            const density = parseInt(document.getElementById('param-density').value);
+            const repulsion = parseInt(document.getElementById('param-repulsion').value);
+            const frictionVal = parseInt(document.getElementById('param-friction').value);
+            const size = parseInt(document.getElementById('param-size').value);
+
+            config.numParticles = density;
+            config.repulsionDistance = repulsion;
+            config.friction = frictionVal / 100;
+            config.maxSize = size;
+            
+            // Aggiorna label visive
+            document.getElementById('val-density').innerText = density;
+            document.getElementById('val-repulsion').innerText = repulsion;
+            document.getElementById('val-friction').innerText = frictionVal;
+            document.getElementById('val-size').innerText = size;
+            
+            if (particles.length < config.numParticles) {
+                for (let i = particles.length; i < config.numParticles; i++) {
+                    const p = new Particle();
+                    p.alpha = 0.1; // Le nuove particelle create durante l'update partono comunque visibili
+                    particles.push(p);
+                }
+            } else if (particles.length > config.numParticles) {
+                particles = particles.slice(0, config.numParticles);
+            }
         }
 
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
         });
+
+        function toggleSettings() {
+            document.getElementById('settings-panel').classList.toggle('open');
+        }
 
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -316,6 +456,8 @@
             });
             requestAnimationFrame(animateParticles);
         }
+
+        resetParticles();
         animateParticles();
 
         /* --- LOGICA AUDIO --- */
@@ -329,21 +471,17 @@
             if (isPlaying) {
                 audio.pause();
                 visualizer.classList.remove('playing');
-                audioBtn.style.opacity = "0.5";
+                audioBtn.style.opacity = "0.4";
                 audioLabel.innerText = "DISCO OFF";
-                audioLabel.style.opacity = "0.5";
             } else {
-                audio.play().catch(e => {
-                    console.log("Audio playback blocked.");
-                });
+                audio.play().catch(e => console.log("Blocked"));
                 visualizer.classList.add('playing');
                 audioBtn.style.opacity = "1";
                 audioLabel.innerText = "DISCO ON";
-                audioLabel.style.opacity = "1";
             }
             isPlaying = !isPlaying;
         }
-        audioBtn.style.opacity = "0.5";
+        audioBtn.style.opacity = "0.4";
     </script>
 </body>
 </html>
