@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DISCOLOW - Coming Soon</title>
+    <!-- Import Font Syne -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .title-giant {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(3rem, 15vw, 12rem);
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+            text-transform: uppercase;
+            user-select: none;
+            text-align: center;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 2rem;
+            width: 100%;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        a {
+            transition: opacity 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        a:hover {
+            opacity: 0.6;
+        }
+
+        .audio-control {
+            cursor: pointer;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .audio-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Animazione minimale per l'icona quando l'audio è attivo */
+        .playing .bar {
+            animation: sound 0.5s infinite ease-in-out alternate;
+        }
+
+        @keyframes sound {
+            0% { height: 4px; }
+            100% { height: 16px; }
+        }
+
+        .bar {
+            width: 2px;
+            height: 12px;
+            background: white;
+            margin: 0 1px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Titolo Centrale -->
+    <h1 class="title-giant">DISCOLOW</h1>
+
+    <!-- Navigazione Inferiore -->
+    <div class="bottom-nav">
+        <!-- Sinistra: Instagram -->
+        <div class="flex-1">
+            <a href="https://www.instagram.com/disco_low" target="_blank">Instagram</a>
+        </div>
+
+        <!-- Centro: Audio Control -->
+        <div class="flex-1 flex justify-center">
+            <div id="audio-btn" class="audio-control" onclick="toggleAudio()">
+                <div id="visualizer" class="flex items-end h-4">
+                    <span class="bar" style="animation-delay: 0.1s"></span>
+                    <span class="bar" style="animation-delay: 0.3s"></span>
+                    <span class="bar" style="animation-delay: 0.2s"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Destra: Email -->
+        <div class="flex-1 text-right">
+            <a href="mailto:info@8b8b.it">Contact Email</a>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="bg-audio" loop>
+        <source src="experimental Jungle fusion.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+    </audio>
+
+    <script>
+        const audio = document.getElementById('bg-audio');
+        const audioBtn = document.getElementById('audio-btn');
+        const visualizer = document.getElementById('visualizer');
+        let isPlaying = false;
+
+        function toggleAudio() {
+            if (isPlaying) {
+                audio.pause();
+                visualizer.classList.remove('playing');
+                audioBtn.style.opacity = "0.5";
+            } else {
+                audio.play().catch(e => {
+                    console.log("Riproduzione bloccata: clicca sulla pagina.");
+                });
+                visualizer.classList.add('playing');
+                audioBtn.style.opacity = "1";
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Setup iniziale dell'icona (spenta)
+        audioBtn.style.opacity = "0.5";
+    </script>
+</body>
+</html>
