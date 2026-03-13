@@ -21,6 +21,18 @@
             justify-content: center;
             align-items: center;
             margin: 0;
+            position: relative;
+        }
+
+        /* Canvas Background */
+        #particleCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Sotto i testi */
+            pointer-events: all;
         }
 
         /* Navigazione superiore */
@@ -49,6 +61,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            z-index: 5; /* Sopra le particelle */
+            pointer-events: none; /* Permette al mouse di interagire con le particelle sotto */
         }
 
         .title-word {
@@ -158,6 +172,9 @@
 </head>
 <body>
 
+    <!-- Sfondo Particellare -->
+    <canvas id="particleCanvas"></canvas>
+
     <!-- Navigazione Superiore -->
     <div class="top-nav">
         <span>8BINARY</span>
@@ -203,6 +220,105 @@
     </audio>
 
     <script>
+        /* --- LOGICA PARTICELLE --- */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let mouseX = null;
+        let mouseY = null;
+        let particles = [];
+        const numParticles = 120; // Ridotto per performance
+        const repulsionDistance = 180;
+        const repulsionStrength = 0.4;
+
+        const platonicSolids = [
+            { name: 'tetrahedron', sides: 3 },
+            { name: 'cube', sides: 4 },
+            { name: 'hexagon', sides: 6 }
+        ];
+
+        function drawPolygon(ctx, x, y, radius, sides) {
+            ctx.beginPath();
+            const angleStep = (Math.PI * 2) / sides;
+            let angle = -Math.PI / 2;
+            ctx.moveTo(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+            for (let i = 1; i < sides; i++) {
+                angle += angleStep;
+                ctx.lineTo(x + radius * Math.cos(angle), y + radius * Math.sin(angle));
+            }
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        class Particle {
+            constructor() {
+                this.init();
+            }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 4 + 2;
+                this.velocityX = (Math.random() - 0.5) * 1.5;
+                this.velocityY = (Math.random() - 0.5) * 1.5;
+                this.alpha = Math.random() * 0.5 + 0.1;
+                this.sides = platonicSolids[Math.floor(Math.random() * platonicSolids.length)].sides;
+            }
+            update() {
+                if (mouseX !== null && mouseY !== null) {
+                    let dx = this.x - mouseX;
+                    let dy = this.y - mouseY;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < repulsionDistance) {
+                        let force = (repulsionDistance - distance) / repulsionDistance;
+                        this.velocityX += (dx / distance) * force * repulsionStrength;
+                        this.velocityY += (dy / distance) * force * repulsionStrength;
+                    }
+                }
+
+                this.x += this.velocityX;
+                this.y += this.velocityY;
+                this.velocityX *= 0.95; // Attrito
+                this.velocityY *= 0.95;
+
+                // Bounce & Wrap
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+                drawPolygon(ctx, this.x, this.y, this.size, this.sides);
+            }
+        }
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* --- LOGICA AUDIO --- */
         const audio = document.getElementById('bg-audio');
         const audioBtn = document.getElementById('audio-btn');
         const visualizer = document.getElementById('visualizer');
@@ -218,7 +334,7 @@
                 audioLabel.style.opacity = "0.5";
             } else {
                 audio.play().catch(e => {
-                    console.log("Audio playback blocked or file not found.");
+                    console.log("Audio playback blocked.");
                 });
                 visualizer.classList.add('playing');
                 audioBtn.style.opacity = "1";
@@ -227,7 +343,6 @@
             }
             isPlaying = !isPlaying;
         }
-
         audioBtn.style.opacity = "0.5";
     </script>
 </body>
